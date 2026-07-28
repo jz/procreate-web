@@ -32,7 +32,7 @@
     .danger { color: #ffd6d6; }
     .stage-wrap { position: relative; min-height: 0; overflow: hidden; }
     .stage { position:absolute; inset: 0; transform-origin: 0 0; display:grid; place-items:center; }
-    .paper { position: relative; width: min(88vw, calc((100vh - 92px) * 1.333)); height: min(calc(88vw * .75), calc(100vh - 92px)); max-width: 1400px; max-height: 1050px; background: #fff; border-radius: 3px; box-shadow: 0 30px 90px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.08); overflow: hidden; touch-action: none; }
+    .paper { position: relative; width: min(88vw, calc((100vh - 92px) * 1.333)); height: min(calc(88vw * .75), calc(100vh - 92px)); max-width: 1400px; max-height: 1050px; background: #fff; border-radius: 3px; box-shadow: 0 30px 90px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.08); overflow: hidden; touch-action: none; transform-origin: center center; will-change: transform; }
     canvas { position:absolute; inset:0; width:100%; height:100%; touch-action:none; }
     #cursor { position: fixed; width: 24px; height:24px; border: 1.5px solid rgba(255,255,255,.8); border-radius: 999px; pointer-events:none; transform: translate(-50%, -50%); display:none; mix-blend-mode:difference; z-index:40; }
     .side { position: absolute; z-index: 20; top: 82px; bottom: 22px; width: 72px; display:flex; flex-direction: column; align-items:center; gap: 14px; padding: 14px 10px; background: var(--panel-2); border: 1px solid var(--line); backdrop-filter: blur(18px); box-shadow: var(--shadow); border-radius: 24px; }
@@ -146,22 +146,22 @@
       toolbar: '工具栏', brushTool: '画笔', smudgeTool: '涂抹', eraserTool: '橡皮', brushLibrary: '画笔库', layers: '图层', undo: '撤销', redo: '重做',
       clear: '清空', exportPng: '导出 PNG', newCanvas: '新画布', canvas: '画布', size: '大小', opacity: '透明', color: '颜色', eyedropper: '取色', fitCanvas: '适配画布', help: '帮助',
       studioDesc: '干净、压感明显', pencilDesc: '铅笔纹理/倾斜加宽', airDesc: '柔边喷枪', markerDesc: '半透明马克笔',
-      brushHint: 'Apple Pencil 会自动使用 pressure、tilt；手指默认也可以画。双指点按撤销，三指点按重做。',
+      brushHint: 'Apple Pencil 会自动使用 pressure、tilt；单指可画画。双指捏合缩放/拖动平移画布，双指轻点撤销，三指轻点重做。',
       addLayer: '+ 新图层', mergeDown: '向下合并',
-      bottomHint: 'iPad: Apple Pencil 压感/倾斜绘画 · 双指撤销 · 三指重做 · 可导出 PNG',
+      bottomHint: 'iPad: Apple Pencil 压感/倾斜绘画 · 双指缩放/平移 · 双指撤销 · 三指重做 · 可导出 PNG',
       clearConfirm: '清空当前图层？', newConfirm: '新建空白画布？当前内容会清空。',
-      helpText: 'Canvas Studio\n\n• Apple Pencil: 支持压感 pressure 和倾斜 tilt\n• 双指点按：撤销；三指点按：重做\n• 图层按钮：新增/隐藏/删除/合并图层\n• 画笔库：Studio Pen、6B Pencil、Airbrush、Marker\n• 导出 PNG 保存成图片',
+      helpText: 'Canvas Studio\n\n• Apple Pencil: 支持压感 pressure 和倾斜 tilt\n• 双指捏合：缩放画布；双指拖动：平移画布\n• 双指轻点：撤销；三指轻点：重做\n• 图层按钮：新增/隐藏/删除/合并图层\n• 画笔库：Studio Pen、6B Pencil、Airbrush、Marker\n• 导出 PNG 保存成图片',
       layer: '图层', backgroundDraft: '背景草稿', mainLayer: '主图层', langButton: 'English'
     },
     en: {
       toolbar: 'Toolbar', brushTool: 'Brush', smudgeTool: 'Smudge', eraserTool: 'Eraser', brushLibrary: 'Brush Library', layers: 'Layers', undo: 'Undo', redo: 'Redo',
       clear: 'Clear', exportPng: 'Export PNG', newCanvas: 'New Canvas', canvas: 'Canvas', size: 'Size', opacity: 'Opacity', color: 'Color', eyedropper: 'Eyedropper', fitCanvas: 'Fit Canvas', help: 'Help',
       studioDesc: 'Clean with strong pressure response', pencilDesc: 'Textured pencil / tilt widens strokes', airDesc: 'Soft-edge airbrush', markerDesc: 'Translucent marker',
-      brushHint: 'Apple Pencil automatically uses pressure and tilt; finger drawing works too. Two-finger tap to undo, three-finger tap to redo.',
+      brushHint: 'Apple Pencil automatically uses pressure and tilt; one finger can draw. Pinch with two fingers to zoom, drag with two fingers to pan, two-finger tap to undo, three-finger tap to redo.',
       addLayer: '+ New Layer', mergeDown: 'Merge Down',
-      bottomHint: 'iPad: Apple Pencil pressure/tilt drawing · two-finger undo · three-finger redo · export PNG',
+      bottomHint: 'iPad: Apple Pencil pressure/tilt drawing · two-finger zoom/pan · two-finger undo · three-finger redo · export PNG',
       clearConfirm: 'Clear the current layer?', newConfirm: 'Create a new blank canvas? Current artwork will be cleared.',
-      helpText: 'Canvas Studio\n\n• Apple Pencil: supports pressure and tilt\n• Two-finger tap: undo; three-finger tap: redo\n• Layers: add / hide / delete / merge layers\n• Brush Library: Studio Pen, 6B Pencil, Airbrush, Marker\n• Export PNG to save your artwork',
+      helpText: 'Canvas Studio\n\n• Apple Pencil: supports pressure and tilt\n• Two-finger pinch: zoom canvas; two-finger drag: pan canvas\n• Two-finger tap: undo; three-finger tap: redo\n• Layers: add / hide / delete / merge layers\n• Brush Library: Studio Pen, 6B Pencil, Airbrush, Marker\n• Export PNG to save your artwork',
       layer: 'Layer', backgroundDraft: 'Background Draft', mainLayer: 'Main Layer', langButton: '中文'
     }
   };
@@ -170,7 +170,8 @@
   const state = {
     tool: 'brush', brush: 'studio', color: '#111111', size: 16, opacity: 1,
     active: 0, layers: [], history: [], future: [], drawing: false, last: null,
-    eyedrop: false, lastTap: 0, touchCount: 0, lang: savedLang || browserLang
+    eyedrop: false, lastTap: 0, touchCount: 0, lang: savedLang || browserLang,
+    zoom: 1, panX: 0, panY: 0, pointers: new Map(), gesture: null, suppressTapUntil: 0
   };
   const t = key => (i18n[state.lang] && i18n[state.lang][key]) || i18n.en[key] || key;
 
@@ -191,10 +192,10 @@
 
   function resizeView() {
     const dpr = Math.min(window.devicePixelRatio || 1, 3);
-    const r = paper.getBoundingClientRect();
-    view.width = Math.round(r.width * dpr); view.height = Math.round(r.height * dpr);
-    view.style.width = r.width + 'px'; view.style.height = r.height + 'px';
-    vctx.setTransform(dpr * r.width / W, 0, 0, dpr * r.height / H, 0, 0);
+    const width = paper.clientWidth, height = paper.clientHeight;
+    view.width = Math.round(width * dpr); view.height = Math.round(height * dpr);
+    view.style.width = width + 'px'; view.style.height = height + 'px';
+    vctx.setTransform(dpr * width / W, 0, 0, dpr * height / H, 0, 0);
     render();
   }
 
@@ -202,6 +203,39 @@
     const r = paper.getBoundingClientRect();
     return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height };
   }
+
+  function applyViewport() {
+    paper.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.zoom})`;
+  }
+  function pointerList() { return [...state.pointers.values()]; }
+  function distance(a, b) { return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY); }
+  function midpoint(a, b) { return { clientX: (a.clientX + b.clientX) / 2, clientY: (a.clientY + b.clientY) / 2 }; }
+  function startGesture() {
+    const pts = pointerList().filter(p => p.pointerType === 'touch');
+    if (pts.length < 2) return;
+    if (state.drawing && state.history.length) {
+      const snap = state.history.pop();
+      snap.forEach((img, i) => state.layers[i] && state.layers[i].ctx.putImageData(img, 0, 0));
+      render();
+    }
+    state.drawing = false; state.last = null;
+    const [a, b] = pts;
+    state.gesture = { startDist: Math.max(1, distance(a, b)), startMid: midpoint(a, b), startZoom: state.zoom, startPanX: state.panX, startPanY: state.panY, moved: false };
+  }
+  function updateGesture() {
+    const pts = pointerList().filter(p => p.pointerType === 'touch');
+    if (!state.gesture || pts.length < 2) return;
+    const [a, b] = pts;
+    const mid = midpoint(a, b);
+    const nextZoom = Math.min(5, Math.max(.45, state.gesture.startZoom * distance(a, b) / state.gesture.startDist));
+    state.zoom = nextZoom;
+    state.panX = state.gesture.startPanX + (mid.clientX - state.gesture.startMid.clientX);
+    state.panY = state.gesture.startPanY + (mid.clientY - state.gesture.startMid.clientY);
+    const moved = Math.abs(distance(a, b) - state.gesture.startDist) > 8 || Math.hypot(mid.clientX - state.gesture.startMid.clientX, mid.clientY - state.gesture.startMid.clientY) > 8;
+    if (moved) { state.gesture.moved = true; state.suppressTapUntil = Date.now() + 500; }
+    applyViewport();
+  }
+  function resetViewport() { state.zoom = 1; state.panX = 0; state.panY = 0; applyViewport(); resizeView(); }
 
   function pressure(e) { return e.pointerType === 'pen' ? Math.max(.08, e.pressure || .35) : Math.max(.25, e.pressure || .55); }
   function tiltFactor(e) { return 1 + Math.min(1.25, Math.hypot(e.tiltX || 0, e.tiltY || 0) / 70); }
@@ -341,19 +375,37 @@
   $('addLayer').onclick = () => { snapshot(); state.layers.push(makeLayer()); state.active = state.layers.length-1; drawLayers(); };
   $('mergeDown').onclick = () => { const i=state.active; if (i>0) { snapshot(); state.layers[i-1].ctx.drawImage(state.layers[i].canvas,0,0); state.layers.splice(i,1); state.active=i-1; render(); drawLayers(); } };
   $('eyedrop').onclick = () => { state.eyedrop = !state.eyedrop; $('eyedrop').style.background = state.eyedrop ? 'rgba(90,167,255,.28)' : ''; };
-  $('fit').onclick = resizeView;
+  $('fit').onclick = resetViewport;
   $('help').onclick = () => alert(t('helpText'));
   $('langToggle').onclick = () => { state.lang = state.lang === 'zh' ? 'en' : 'zh'; localStorage.setItem('canvasStudioLang', state.lang); relabelDefaultLayers(); applyLanguage(); drawLayers(); };
 
-  paper.addEventListener('pointerdown', begin);
-  paper.addEventListener('pointermove', move);
-  paper.addEventListener('pointerup', end);
-  paper.addEventListener('pointercancel', end);
-  paper.addEventListener('pointerleave', () => cursor.style.display='none');
+  paper.addEventListener('pointerdown', e => {
+    state.pointers.set(e.pointerId, e);
+    if (e.pointerType === 'touch' && pointerList().filter(p => p.pointerType === 'touch').length >= 2) { startGesture(); return; }
+    begin(e);
+  });
+  paper.addEventListener('pointermove', e => {
+    if (state.pointers.has(e.pointerId)) state.pointers.set(e.pointerId, e);
+    if (state.gesture) { updateGesture(); return; }
+    move(e);
+  });
+  const finishPointer = e => {
+    state.pointers.delete(e.pointerId);
+    if (state.gesture) {
+      const touchLeft = pointerList().filter(p => p.pointerType === 'touch').length;
+      if (state.gesture.moved) state.suppressTapUntil = Date.now() + 500;
+      if (touchLeft < 2) state.gesture = null;
+      end(); return;
+    }
+    end();
+  };
+  paper.addEventListener('pointerup', finishPointer);
+  paper.addEventListener('pointercancel', finishPointer);
+  paper.addEventListener('pointerleave', e => { cursor.style.display='none'; if (e.pointerType === 'mouse') finishPointer(e); });
   paper.addEventListener('touchstart', e => { state.touchCount = e.touches.length; if (e.touches.length >= 2) state.lastTap = Date.now(); }, {passive:false});
   paper.addEventListener('touchend', e => {
     const n = state.touchCount;
-    if (Date.now() - state.lastTap < 360) { if (n === 2) restore(state.history, state.future); if (n >= 3) restore(state.future, state.history); }
+    if (Date.now() > state.suppressTapUntil && Date.now() - state.lastTap < 360) { if (n === 2) restore(state.history, state.future); if (n >= 3) restore(state.future, state.history); }
     state.touchCount = e.touches.length;
   }, {passive:false});
   ['gesturestart','gesturechange','gestureend'].forEach(ev => window.addEventListener(ev, e => e.preventDefault()));
