@@ -73,61 +73,62 @@
   <div class="app">
     <header class="topbar">
       <div class="brand"><div class="dot"></div><span>Canvas Studio</span></div>
-      <nav class="toolbar" aria-label="工具栏">
-        <button class="tool icon active" data-tool="brush" title="画笔">✍️</button>
-        <button class="tool icon" data-tool="smudge" title="涂抹">☝️</button>
-        <button class="tool icon" data-tool="eraser" title="橡皮">⌫</button>
-        <button id="brushPanelBtn" class="icon" title="画笔库">🖌️</button>
-        <button id="layersBtn" class="icon" title="图层">▱</button>
-        <button id="undo" class="icon" title="撤销">↶</button>
-        <button id="redo" class="icon" title="重做">↷</button>
-        <button id="clear" class="danger">清空</button>
-        <button id="export">导出 PNG</button>
-        <button id="newCanvas">新画布</button>
+      <nav class="toolbar" data-i18n-aria="toolbar" aria-label="工具栏">
+        <button class="tool icon active" data-tool="brush" data-i18n-title="brushTool" title="画笔">✍️</button>
+        <button class="tool icon" data-tool="smudge" data-i18n-title="smudgeTool" title="涂抹">☝️</button>
+        <button class="tool icon" data-tool="eraser" data-i18n-title="eraserTool" title="橡皮">⌫</button>
+        <button id="brushPanelBtn" class="icon" data-i18n-title="brushLibrary" title="画笔库">🖌️</button>
+        <button id="layersBtn" class="icon" data-i18n-title="layers" title="图层">▱</button>
+        <button id="undo" class="icon" data-i18n-title="undo" title="撤销">↶</button>
+        <button id="redo" class="icon" data-i18n-title="redo" title="重做">↷</button>
+        <button id="clear" class="danger" data-i18n="clear">清空</button>
+        <button id="export" data-i18n="exportPng">导出 PNG</button>
+        <button id="newCanvas" data-i18n="newCanvas">新画布</button>
+        <button id="langToggle" title="Language">English</button>
       </nav>
     </header>
 
     <main class="stage-wrap" id="wrap">
       <div class="stage" id="stage">
-        <div class="paper" id="paper" aria-label="画布">
+        <div class="paper" id="paper" data-i18n-aria="canvas" aria-label="画布">
           <canvas id="view"></canvas>
         </div>
       </div>
       <aside class="side left">
-        <div class="label">大小<br><span id="sizeText">16</span></div>
+        <div class="label"><span data-i18n="size">大小</span><br><span id="sizeText">16</span></div>
         <input id="size" class="slider" type="range" min="1" max="120" value="16">
-        <div class="label">透明<br><span id="opacityText">100%</span></div>
+        <div class="label"><span data-i18n="opacity">透明</span><br><span id="opacityText">100%</span></div>
         <input id="opacity" class="slider" type="range" min="5" max="100" value="100">
       </aside>
       <aside class="side right">
-        <label class="color" title="颜色"><input id="color" type="color" value="#111111"></label>
-        <button id="eyedrop" class="icon" title="取色">◎</button>
-        <button id="fit" class="icon" title="适配画布">⤢</button>
-        <button id="help" class="icon" title="帮助">?</button>
+        <label class="color" data-i18n-title="color" title="颜色"><input id="color" type="color" value="#111111"></label>
+        <button id="eyedrop" class="icon" data-i18n-title="eyedropper" title="取色">◎</button>
+        <button id="fit" class="icon" data-i18n-title="fitCanvas" title="适配画布">⤢</button>
+        <button id="help" class="icon" data-i18n-title="help" title="帮助">?</button>
       </aside>
 
       <section id="brushPanel" class="panel">
-        <h3>画笔库</h3>
+        <h3 data-i18n="brushLibrary">画笔库</h3>
         <div class="brush-grid">
-          <button class="brush" data-brush="studio"><b>Studio Pen</b><span>干净、压感明显</span></button>
-          <button class="brush" data-brush="pencil"><b>6B Pencil</b><span>铅笔纹理/倾斜加宽</span></button>
-          <button class="brush" data-brush="air"><b>Airbrush</b><span>柔边喷枪</span></button>
-          <button class="brush" data-brush="marker"><b>Marker</b><span>半透明马克笔</span></button>
+          <button class="brush" data-brush="studio"><b>Studio Pen</b><span data-i18n="studioDesc">干净、压感明显</span></button>
+          <button class="brush" data-brush="pencil"><b>6B Pencil</b><span data-i18n="pencilDesc">铅笔纹理/倾斜加宽</span></button>
+          <button class="brush" data-brush="air"><b>Airbrush</b><span data-i18n="airDesc">柔边喷枪</span></button>
+          <button class="brush" data-brush="marker"><b>Marker</b><span data-i18n="markerDesc">半透明马克笔</span></button>
         </div>
-        <p class="mini">Apple Pencil 会自动使用 pressure、tilt；手指默认也可以画。双指点按撤销，三指点按重做。</p>
+        <p class="mini" data-i18n="brushHint">Apple Pencil 会自动使用 pressure、tilt；手指默认也可以画。双指点按撤销，三指点按重做。</p>
       </section>
 
       <section id="layersPanel" class="panel">
-        <h3>图层</h3>
+        <h3 data-i18n="layers">图层</h3>
         <div class="layers" id="layers"></div>
         <div style="display:flex; gap:8px; margin-top:10px">
-          <button id="addLayer">+ 新图层</button>
-          <button id="mergeDown">向下合并</button>
+          <button id="addLayer" data-i18n="addLayer">+ 新图层</button>
+          <button id="mergeDown" data-i18n="mergeDown">向下合并</button>
         </div>
       </section>
 
       <div id="cursor"></div>
-      <div class="hint">iPad: Apple Pencil 压感/倾斜绘画 · 双指撤销 · 三指重做 · 可导出 PNG</div>
+      <div class="hint" data-i18n="bottomHint">iPad: Apple Pencil 压感/倾斜绘画 · 双指撤销 · 三指重做 · 可导出 PNG</div>
     </main>
   </div>
 
@@ -140,13 +141,49 @@
   const vctx = view.getContext('2d', { alpha: false, desynchronized: true });
   const cursor = document.getElementById('cursor');
   const $ = id => document.getElementById(id);
+  const i18n = {
+    zh: {
+      toolbar: '工具栏', brushTool: '画笔', smudgeTool: '涂抹', eraserTool: '橡皮', brushLibrary: '画笔库', layers: '图层', undo: '撤销', redo: '重做',
+      clear: '清空', exportPng: '导出 PNG', newCanvas: '新画布', canvas: '画布', size: '大小', opacity: '透明', color: '颜色', eyedropper: '取色', fitCanvas: '适配画布', help: '帮助',
+      studioDesc: '干净、压感明显', pencilDesc: '铅笔纹理/倾斜加宽', airDesc: '柔边喷枪', markerDesc: '半透明马克笔',
+      brushHint: 'Apple Pencil 会自动使用 pressure、tilt；手指默认也可以画。双指点按撤销，三指点按重做。',
+      addLayer: '+ 新图层', mergeDown: '向下合并',
+      bottomHint: 'iPad: Apple Pencil 压感/倾斜绘画 · 双指撤销 · 三指重做 · 可导出 PNG',
+      clearConfirm: '清空当前图层？', newConfirm: '新建空白画布？当前内容会清空。',
+      helpText: 'Canvas Studio\n\n• Apple Pencil: 支持压感 pressure 和倾斜 tilt\n• 双指点按：撤销；三指点按：重做\n• 图层按钮：新增/隐藏/删除/合并图层\n• 画笔库：Studio Pen、6B Pencil、Airbrush、Marker\n• 导出 PNG 保存成图片',
+      layer: '图层', backgroundDraft: '背景草稿', mainLayer: '主图层', langButton: 'English'
+    },
+    en: {
+      toolbar: 'Toolbar', brushTool: 'Brush', smudgeTool: 'Smudge', eraserTool: 'Eraser', brushLibrary: 'Brush Library', layers: 'Layers', undo: 'Undo', redo: 'Redo',
+      clear: 'Clear', exportPng: 'Export PNG', newCanvas: 'New Canvas', canvas: 'Canvas', size: 'Size', opacity: 'Opacity', color: 'Color', eyedropper: 'Eyedropper', fitCanvas: 'Fit Canvas', help: 'Help',
+      studioDesc: 'Clean with strong pressure response', pencilDesc: 'Textured pencil / tilt widens strokes', airDesc: 'Soft-edge airbrush', markerDesc: 'Translucent marker',
+      brushHint: 'Apple Pencil automatically uses pressure and tilt; finger drawing works too. Two-finger tap to undo, three-finger tap to redo.',
+      addLayer: '+ New Layer', mergeDown: 'Merge Down',
+      bottomHint: 'iPad: Apple Pencil pressure/tilt drawing · two-finger undo · three-finger redo · export PNG',
+      clearConfirm: 'Clear the current layer?', newConfirm: 'Create a new blank canvas? Current artwork will be cleared.',
+      helpText: 'Canvas Studio\n\n• Apple Pencil: supports pressure and tilt\n• Two-finger tap: undo; three-finger tap: redo\n• Layers: add / hide / delete / merge layers\n• Brush Library: Studio Pen, 6B Pencil, Airbrush, Marker\n• Export PNG to save your artwork',
+      layer: 'Layer', backgroundDraft: 'Background Draft', mainLayer: 'Main Layer', langButton: '中文'
+    }
+  };
+  const savedLang = localStorage.getItem('canvasStudioLang');
+  const browserLang = navigator.language && navigator.language.toLowerCase().startsWith('zh') ? 'zh' : 'en';
   const state = {
     tool: 'brush', brush: 'studio', color: '#111111', size: 16, opacity: 1,
     active: 0, layers: [], history: [], future: [], drawing: false, last: null,
-    eyedrop: false, lastTap: 0, touchCount: 0
+    eyedrop: false, lastTap: 0, touchCount: 0, lang: savedLang || browserLang
   };
+  const t = key => (i18n[state.lang] && i18n[state.lang][key]) || i18n.en[key] || key;
 
-  function makeLayer(name = `图层 ${state.layers.length + 1}`) {
+  function applyLanguage() {
+    document.documentElement.lang = state.lang === 'zh' ? 'zh-CN' : 'en';
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
+    $('langToggle').textContent = t('langButton');
+    $('langToggle').title = state.lang === 'zh' ? 'Switch to English' : '切换到中文';
+  }
+
+  function makeLayer(name = `${t('layer')} ${state.layers.length + 1}`) {
     const c = document.createElement('canvas'); c.width = W; c.height = H;
     const ctx = c.getContext('2d', { willReadFrequently: true });
     return { canvas: c, ctx, name, visible: true, opacity: 1 };
@@ -298,14 +335,15 @@
   $('color').oninput = e => state.color = e.target.value;
   $('undo').onclick = () => restore(state.history, state.future);
   $('redo').onclick = () => restore(state.future, state.history);
-  $('clear').onclick = () => { if(confirm('清空当前图层？')) { snapshot(); activeLayer().ctx.clearRect(0,0,W,H); render(); drawLayers(); } };
-  $('newCanvas').onclick = () => { if(confirm('新建空白画布？当前内容会清空。')) init(true); };
+  $('clear').onclick = () => { if(confirm(t('clearConfirm'))) { snapshot(); activeLayer().ctx.clearRect(0,0,W,H); render(); drawLayers(); } };
+  $('newCanvas').onclick = () => { if(confirm(t('newConfirm'))) init(true); };
   $('export').onclick = () => { const a=document.createElement('a'); a.download='canvas-studio.png'; a.href=compositeExport().toDataURL('image/png'); a.click(); };
   $('addLayer').onclick = () => { snapshot(); state.layers.push(makeLayer()); state.active = state.layers.length-1; drawLayers(); };
   $('mergeDown').onclick = () => { const i=state.active; if (i>0) { snapshot(); state.layers[i-1].ctx.drawImage(state.layers[i].canvas,0,0); state.layers.splice(i,1); state.active=i-1; render(); drawLayers(); } };
   $('eyedrop').onclick = () => { state.eyedrop = !state.eyedrop; $('eyedrop').style.background = state.eyedrop ? 'rgba(90,167,255,.28)' : ''; };
   $('fit').onclick = resizeView;
-  $('help').onclick = () => alert('Canvas Studio\n\n• Apple Pencil: 支持压感 pressure 和倾斜 tilt\n• 双指点按：撤销；三指点按：重做\n• 图层按钮：新增/隐藏/删除/合并图层\n• 画笔库：Studio Pen、6B Pencil、Airbrush、Marker\n• 导出 PNG 保存成图片');
+  $('help').onclick = () => alert(t('helpText'));
+  $('langToggle').onclick = () => { state.lang = state.lang === 'zh' ? 'en' : 'zh'; localStorage.setItem('canvasStudioLang', state.lang); relabelDefaultLayers(); applyLanguage(); drawLayers(); };
 
   paper.addEventListener('pointerdown', begin);
   paper.addEventListener('pointermove', move);
@@ -321,8 +359,18 @@
   ['gesturestart','gesturechange','gestureend'].forEach(ev => window.addEventListener(ev, e => e.preventDefault()));
   window.addEventListener('resize', resizeView);
 
+  function relabelDefaultLayers() {
+    const defaults = new Set([i18n.zh.backgroundDraft, i18n.en.backgroundDraft, i18n.zh.mainLayer, i18n.en.mainLayer]);
+    if (state.layers[0] && defaults.has(state.layers[0].name)) state.layers[0].name = t('backgroundDraft');
+    if (state.layers[1] && defaults.has(state.layers[1].name)) state.layers[1].name = t('mainLayer');
+    state.layers.forEach((l, i) => {
+      if (/^(图层|Layer) \d+$/.test(l.name)) l.name = `${t('layer')} ${i + 1}`;
+    });
+  }
+
   function init(reset=false) {
-    state.layers = [makeLayer('背景草稿'), makeLayer('主图层')]; state.active = 1; state.history=[]; state.future=[];
+    applyLanguage();
+    state.layers = [makeLayer(t('backgroundDraft')), makeLayer(t('mainLayer'))]; state.active = 1; state.history=[]; state.future=[];
     if (!reset) {
       // tiny welcome mark on hidden-ish first layer, proving canvas is live without getting in the way
       const c = state.layers[0].ctx; c.fillStyle='rgba(0,0,0,.035)'; c.font='80px -apple-system'; c.fillText('Canvas Studio', 86, 140);
