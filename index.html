@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <title>Canvas Studio — iPad Drawing</title>
+  <style>
+    :root {
+      --bg: #181818;
+      --panel: rgba(38, 38, 38, .86);
+      --panel-2: rgba(24, 24, 24, .72);
+      --line: rgba(255,255,255,.11);
+      --text: #f4f4f4;
+      --muted: #a7a7a7;
+      --accent: #5aa7ff;
+      --danger: #ff6b6b;
+      --shadow: 0 14px 44px rgba(0,0,0,.35);
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif; touch-action: none; }
+    body { overscroll-behavior: none; }
+    .app { position: fixed; inset: 0; display: grid; grid-template-rows: 58px 1fr; background: radial-gradient(circle at center, #2b2b2b 0, #141414 60%); }
+    .topbar { z-index: 30; display: flex; align-items: center; gap: 10px; padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) 8px max(10px, env(safe-area-inset-left)); background: linear-gradient(to bottom, rgba(16,16,16,.82), rgba(16,16,16,.36)); backdrop-filter: blur(20px); border-bottom: 1px solid var(--line); }
+    .brand { display:flex; align-items:center; gap: 9px; min-width: 182px; font-weight: 700; letter-spacing: -.02em; }
+    .brand .dot { width: 28px; height: 28px; border-radius: 9px; background: conic-gradient(from 190deg, #ff595e, #ffca3a, #8ac926, #1982c4, #6a4c93, #ff595e); box-shadow: inset 0 0 0 2px rgba(255,255,255,.24); }
+    .toolbar { display: flex; align-items: center; gap: 8px; flex: 1; overflow-x: auto; scrollbar-width: none; }
+    .toolbar::-webkit-scrollbar { display:none; }
+    button, .tool, select { color: var(--text); border: 1px solid var(--line); background: rgba(255,255,255,.08); border-radius: 14px; min-height: 38px; padding: 0 12px; font: inherit; box-shadow: none; }
+    button { cursor: pointer; }
+    button:active, .tool.active { transform: translateY(1px); background: rgba(90,167,255,.22); border-color: rgba(90,167,255,.62); }
+    .icon { width: 42px; padding: 0; display: inline-grid; place-items: center; font-size: 18px; }
+    .danger { color: #ffd6d6; }
+    .stage-wrap { position: relative; min-height: 0; overflow: hidden; }
+    .stage { position:absolute; inset: 0; transform-origin: 0 0; display:grid; place-items:center; }
+    .paper { position: relative; width: min(88vw, calc((100vh - 92px) * 1.333)); height: min(calc(88vw * .75), calc(100vh - 92px)); max-width: 1400px; max-height: 1050px; background: #fff; border-radius: 3px; box-shadow: 0 30px 90px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.08); overflow: hidden; touch-action: none; }
+    canvas { position:absolute; inset:0; width:100%; height:100%; touch-action:none; }
+    #cursor { position: fixed; width: 24px; height:24px; border: 1.5px solid rgba(255,255,255,.8); border-radius: 999px; pointer-events:none; transform: translate(-50%, -50%); display:none; mix-blend-mode:difference; z-index:40; }
+    .side { position: absolute; z-index: 20; top: 82px; bottom: 22px; width: 72px; display:flex; flex-direction: column; align-items:center; gap: 14px; padding: 14px 10px; background: var(--panel-2); border: 1px solid var(--line); backdrop-filter: blur(18px); box-shadow: var(--shadow); border-radius: 24px; }
+    .side.left { left: max(12px, env(safe-area-inset-left)); }
+    .side.right { right: max(12px, env(safe-area-inset-right)); width: 86px; }
+    .slider { writing-mode: bt-lr; -webkit-appearance: slider-vertical; appearance: slider-vertical; width: 36px; height: 150px; accent-color: var(--accent); }
+    .label { font-size: 11px; color: var(--muted); text-align:center; line-height:1.1; }
+    .color { width: 46px; height: 46px; border-radius: 50%; padding:0; border: 3px solid rgba(255,255,255,.8); overflow:hidden; background: #111; }
+    .color input { width: 64px; height: 64px; margin: -9px; border:0; padding:0; background:transparent; }
+    .panel { position: absolute; right: max(112px, calc(env(safe-area-inset-right) + 112px)); top: 82px; z-index: 35; width: 310px; max-width: calc(100vw - 136px); background: var(--panel); border: 1px solid var(--line); box-shadow: var(--shadow); border-radius: 24px; backdrop-filter: blur(22px); padding: 14px; display:none; }
+    .panel.show { display:block; }
+    .panel h3 { margin: 4px 2px 12px; font-size: 15px; }
+    .brush-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .brush { text-align:left; padding: 12px; border-radius: 16px; min-height: 62px; }
+    .brush b { display:block; font-size: 14px; }
+    .brush span { display:block; color: var(--muted); font-size: 12px; margin-top: 3px; }
+    .layers { display:flex; flex-direction:column; gap: 8px; max-height: 330px; overflow:auto; }
+    .layer { display:flex; align-items:center; gap: 8px; padding: 8px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.06); }
+    .layer.active { outline: 2px solid rgba(90,167,255,.55); }
+    .thumb { width: 48px; height: 34px; background: #fff; border-radius: 7px; border: 1px solid rgba(0,0,0,.2); }
+    .layer-name { flex:1; font-size:13px; }
+    .layer-actions { display:flex; gap:5px; }
+    .layer-actions button { min-height: 30px; border-radius:10px; padding:0 8px; }
+    .hint { position: absolute; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 20; color: rgba(255,255,255,.72); background: rgba(0,0,0,.35); border: 1px solid var(--line); border-radius: 999px; padding: 9px 14px; font-size: 13px; backdrop-filter: blur(14px); white-space: nowrap; }
+    .mini { font-size:12px; color:var(--muted); margin: 10px 2px 0; line-height:1.35; }
+    @media (max-width: 820px) {
+      .brand span { display:none; }
+      .brand { min-width: auto; }
+      .side.left { top: auto; right: auto; left: 10px; bottom: 14px; height: 70px; width: auto; flex-direction: row; }
+      .side.right { top: 72px; }
+      .slider { writing-mode: horizontal-tb; -webkit-appearance: auto; appearance: auto; width: 120px; height: 28px; }
+      .paper { width: calc(100vw - 116px); height: calc((100vw - 116px) * .75); }
+      .hint { display:none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><div class="dot"></div><span>Canvas Studio</span></div>
+      <nav class="toolbar" aria-label="工具栏">
+        <button class="tool icon active" data-tool="brush" title="画笔">✍️</button>
+        <button class="tool icon" data-tool="smudge" title="涂抹">☝️</button>
+        <button class="tool icon" data-tool="eraser" title="橡皮">⌫</button>
+        <button id="brushPanelBtn" class="icon" title="画笔库">🖌️</button>
+        <button id="layersBtn" class="icon" title="图层">▱</button>
+        <button id="undo" class="icon" title="撤销">↶</button>
+        <button id="redo" class="icon" title="重做">↷</button>
+        <button id="clear" class="danger">清空</button>
+        <button id="export">导出 PNG</button>
+        <button id="newCanvas">新画布</button>
+      </nav>
+    </header>
+
+    <main class="stage-wrap" id="wrap">
+      <div class="stage" id="stage">
+        <div class="paper" id="paper" aria-label="画布">
+          <canvas id="view"></canvas>
+        </div>
+      </div>
+      <aside class="side left">
+        <div class="label">大小<br><span id="sizeText">16</span></div>
+        <input id="size" class="slider" type="range" min="1" max="120" value="16">
+        <div class="label">透明<br><span id="opacityText">100%</span></div>
+        <input id="opacity" class="slider" type="range" min="5" max="100" value="100">
+      </aside>
+      <aside class="side right">
+        <label class="color" title="颜色"><input id="color" type="color" value="#111111"></label>
+        <button id="eyedrop" class="icon" title="取色">◎</button>
+        <button id="fit" class="icon" title="适配画布">⤢</button>
+        <button id="help" class="icon" title="帮助">?</button>
+      </aside>
+
+      <section id="brushPanel" class="panel">
+        <h3>画笔库</h3>
+        <div class="brush-grid">
+          <button class="brush" data-brush="studio"><b>Studio Pen</b><span>干净、压感明显</span></button>
+          <button class="brush" data-brush="pencil"><b>6B Pencil</b><span>铅笔纹理/倾斜加宽</span></button>
+          <button class="brush" data-brush="air"><b>Airbrush</b><span>柔边喷枪</span></button>
+          <button class="brush" data-brush="marker"><b>Marker</b><span>半透明马克笔</span></button>
+        </div>
+        <p class="mini">Apple Pencil 会自动使用 pressure、tilt；手指默认也可以画。双指点按撤销，三指点按重做。</p>
+      </section>
+
+      <section id="layersPanel" class="panel">
+        <h3>图层</h3>
+        <div class="layers" id="layers"></div>
+        <div style="display:flex; gap:8px; margin-top:10px">
+          <button id="addLayer">+ 新图层</button>
+          <button id="mergeDown">向下合并</button>
+        </div>
+      </section>
+
+      <div id="cursor"></div>
+      <div class="hint">iPad: Apple Pencil 压感/倾斜绘画 · 双指撤销 · 三指重做 · 可导出 PNG</div>
+    </main>
+  </div>
+
+<script>
+(() => {
+  'use strict';
+  const W = 2732, H = 2048; // iPad Pro 4:3 style canvas
+  const view = document.getElementById('view');
+  const paper = document.getElementById('paper');
+  const vctx = view.getContext('2d', { alpha: false, desynchronized: true });
+  const cursor = document.getElementById('cursor');
+  const $ = id => document.getElementById(id);
+  const state = {
+    tool: 'brush', brush: 'studio', color: '#111111', size: 16, opacity: 1,
+    active: 0, layers: [], history: [], future: [], drawing: false, last: null,
+    eyedrop: false, lastTap: 0, touchCount: 0
+  };
+
+  function makeLayer(name = `图层 ${state.layers.length + 1}`) {
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const ctx = c.getContext('2d', { willReadFrequently: true });
+    return { canvas: c, ctx, name, visible: true, opacity: 1 };
+  }
+
+  function resizeView() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    const r = paper.getBoundingClientRect();
+    view.width = Math.round(r.width * dpr); view.height = Math.round(r.height * dpr);
+    view.style.width = r.width + 'px'; view.style.height = r.height + 'px';
+    vctx.setTransform(dpr * r.width / W, 0, 0, dpr * r.height / H, 0, 0);
+    render();
+  }
+
+  function canvasPoint(e) {
+    const r = paper.getBoundingClientRect();
+    return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height };
+  }
+
+  function pressure(e) { return e.pointerType === 'pen' ? Math.max(.08, e.pressure || .35) : Math.max(.25, e.pressure || .55); }
+  function tiltFactor(e) { return 1 + Math.min(1.25, Math.hypot(e.tiltX || 0, e.tiltY || 0) / 70); }
+  function activeLayer() { return state.layers[state.active]; }
+  function hexToRgb(hex) { const n = parseInt(hex.slice(1), 16); return [(n>>16)&255, (n>>8)&255, n&255]; }
+
+  function render() {
+    vctx.save();
+    vctx.setTransform(1,0,0,1,0,0);
+    vctx.fillStyle = '#fff'; vctx.fillRect(0,0,view.width,view.height);
+    vctx.restore();
+    for (const l of state.layers) if (l.visible) {
+      vctx.globalAlpha = l.opacity;
+      vctx.drawImage(l.canvas, 0, 0, W, H);
+    }
+    vctx.globalAlpha = 1;
+  }
+
+  function snapshot() {
+    state.history.push(state.layers.map(l => l.ctx.getImageData(0,0,W,H)));
+    if (state.history.length > 28) state.history.shift();
+    state.future.length = 0;
+  }
+  function restore(stackFrom, stackTo) {
+    if (!stackFrom.length) return;
+    stackTo.push(state.layers.map(l => l.ctx.getImageData(0,0,W,H)));
+    const snap = stackFrom.pop();
+    while (state.layers.length < snap.length) state.layers.push(makeLayer());
+    while (state.layers.length > snap.length) state.layers.pop();
+    snap.forEach((img, i) => state.layers[i].ctx.putImageData(img,0,0));
+    state.active = Math.min(state.active, state.layers.length - 1);
+    render(); drawLayers();
+  }
+
+  function drawStroke(a, b, e) {
+    const l = activeLayer(); if (!l) return;
+    const ctx = l.ctx;
+    const p = pressure(e); const base = state.size * p * (state.brush === 'pencil' ? tiltFactor(e) : 1);
+    const [r,g,bv] = hexToRgb(state.color);
+    ctx.save();
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.globalAlpha = state.opacity * (state.brush === 'marker' ? .42 : 1);
+
+    if (state.tool === 'eraser') {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.strokeStyle = 'rgba(0,0,0,1)'; ctx.lineWidth = state.size * (1 + p);
+    } else if (state.tool === 'smudge') {
+      // lightweight wet smudge: sample behind and drag a translucent blob forward
+      const rad = Math.max(8, base * 1.5), sx = Math.max(0, a.x - rad), sy = Math.max(0, a.y - rad);
+      try { ctx.globalAlpha = .2; ctx.filter = 'blur(6px)'; ctx.drawImage(l.canvas, sx, sy, rad*2, rad*2, b.x-rad, b.y-rad, rad*2, rad*2); } catch {}
+      ctx.restore(); return;
+    } else {
+      ctx.globalCompositeOperation = 'source-over';
+      if (state.brush === 'air') {
+        const grad = ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,base*1.6);
+        grad.addColorStop(0, `rgba(${r},${g},${bv},${.16 * state.opacity})`);
+        grad.addColorStop(1, `rgba(${r},${g},${bv},0)`);
+        ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(b.x,b.y,base*1.6,0,Math.PI*2); ctx.fill(); ctx.restore(); return;
+      }
+      ctx.strokeStyle = state.brush === 'pencil' ? `rgba(${r},${g},${bv},${.82})` : state.color;
+      ctx.lineWidth = base;
+      if (state.brush === 'pencil') ctx.setLineDash([base * .9, base * .32]);
+    }
+
+    // quadratic smoothing for Procreate-like stroke feel
+    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.quadraticCurveTo(a.x, a.y, mx, my); ctx.stroke();
+    ctx.restore();
+  }
+
+  function begin(e) {
+    if (e.pointerType === 'touch' && state.touchCount >= 2) return;
+    paper.setPointerCapture?.(e.pointerId);
+    if (state.eyedrop) return pickColor(e);
+    snapshot(); state.drawing = true; state.last = canvasPoint(e); drawDot(state.last, e); render(); updateCursor(e);
+  }
+  function move(e) {
+    updateCursor(e);
+    if (!state.drawing) return;
+    const pts = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+    for (const pe of pts) { const p = canvasPoint(pe); drawStroke(state.last, p, pe); state.last = p; }
+    render();
+  }
+  function end() { state.drawing = false; state.last = null; drawLayers(); }
+  function drawDot(p, e) { drawStroke(p, {x:p.x+.01, y:p.y+.01}, e); }
+
+  function updateCursor(e) {
+    cursor.style.display = e.pointerType === 'mouse' ? 'block' : 'none';
+    cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+    const s = Math.max(8, state.size * .7); cursor.style.width = cursor.style.height = s + 'px';
+  }
+
+  function pickColor(e) {
+    const p = canvasPoint(e); const comp = document.createElement('canvas'); comp.width=W; comp.height=H; const c=comp.getContext('2d');
+    c.fillStyle='#fff'; c.fillRect(0,0,W,H); state.layers.forEach(l => l.visible && c.drawImage(l.canvas,0,0));
+    const d = c.getImageData(Math.max(0, p.x|0), Math.max(0, p.y|0), 1, 1).data;
+    const hex = '#' + [d[0],d[1],d[2]].map(x => x.toString(16).padStart(2,'0')).join('');
+    $('color').value = state.color = hex; state.eyedrop = false; $('eyedrop').style.background = '';
+  }
+
+  function drawLayers() {
+    const box = $('layers'); box.innerHTML = '';
+    state.layers.forEach((l, i) => {
+      const row = document.createElement('div'); row.className = 'layer' + (i === state.active ? ' active' : '');
+      const th = document.createElement('canvas'); th.className='thumb'; th.width=96; th.height=68; const t=th.getContext('2d'); t.fillStyle='#fff'; t.fillRect(0,0,96,68); t.drawImage(l.canvas,0,0,96,68);
+      row.append(th);
+      const name = document.createElement('div'); name.className='layer-name'; name.textContent = l.name; row.append(name);
+      const actions = document.createElement('div'); actions.className='layer-actions';
+      const eye = document.createElement('button'); eye.textContent = l.visible ? '👁' : '—'; eye.onclick = ev => { ev.stopPropagation(); l.visible=!l.visible; render(); drawLayers(); };
+      const del = document.createElement('button'); del.textContent='×'; del.onclick = ev => { ev.stopPropagation(); if (state.layers.length > 1) { snapshot(); state.layers.splice(i,1); state.active=Math.max(0,state.active-1); render(); drawLayers(); } };
+      actions.append(eye, del); row.append(actions);
+      row.onclick = () => { state.active = i; drawLayers(); };
+      box.prepend(row);
+    });
+  }
+
+  function compositeExport() {
+    const out = document.createElement('canvas'); out.width=W; out.height=H; const c=out.getContext('2d'); c.fillStyle='#fff'; c.fillRect(0,0,W,H);
+    state.layers.forEach(l => { if (l.visible) { c.globalAlpha=l.opacity; c.drawImage(l.canvas,0,0); }});
+    return out;
+  }
+
+  document.querySelectorAll('[data-tool]').forEach(btn => btn.onclick = () => {
+    state.tool = btn.dataset.tool; document.querySelectorAll('[data-tool]').forEach(b=>b.classList.toggle('active', b===btn));
+  });
+  document.querySelectorAll('[data-brush]').forEach(btn => btn.onclick = () => { state.brush = btn.dataset.brush; $('brushPanel').classList.remove('show'); });
+  $('brushPanelBtn').onclick = () => { $('brushPanel').classList.toggle('show'); $('layersPanel').classList.remove('show'); };
+  $('layersBtn').onclick = () => { drawLayers(); $('layersPanel').classList.toggle('show'); $('brushPanel').classList.remove('show'); };
+  $('size').oninput = e => { state.size = +e.target.value; $('sizeText').textContent = state.size; };
+  $('opacity').oninput = e => { state.opacity = +e.target.value/100; $('opacityText').textContent = e.target.value + '%'; };
+  $('color').oninput = e => state.color = e.target.value;
+  $('undo').onclick = () => restore(state.history, state.future);
+  $('redo').onclick = () => restore(state.future, state.history);
+  $('clear').onclick = () => { if(confirm('清空当前图层？')) { snapshot(); activeLayer().ctx.clearRect(0,0,W,H); render(); drawLayers(); } };
+  $('newCanvas').onclick = () => { if(confirm('新建空白画布？当前内容会清空。')) init(true); };
+  $('export').onclick = () => { const a=document.createElement('a'); a.download='canvas-studio.png'; a.href=compositeExport().toDataURL('image/png'); a.click(); };
+  $('addLayer').onclick = () => { snapshot(); state.layers.push(makeLayer()); state.active = state.layers.length-1; drawLayers(); };
+  $('mergeDown').onclick = () => { const i=state.active; if (i>0) { snapshot(); state.layers[i-1].ctx.drawImage(state.layers[i].canvas,0,0); state.layers.splice(i,1); state.active=i-1; render(); drawLayers(); } };
+  $('eyedrop').onclick = () => { state.eyedrop = !state.eyedrop; $('eyedrop').style.background = state.eyedrop ? 'rgba(90,167,255,.28)' : ''; };
+  $('fit').onclick = resizeView;
+  $('help').onclick = () => alert('Canvas Studio\n\n• Apple Pencil: 支持压感 pressure 和倾斜 tilt\n• 双指点按：撤销；三指点按：重做\n• 图层按钮：新增/隐藏/删除/合并图层\n• 画笔库：Studio Pen、6B Pencil、Airbrush、Marker\n• 导出 PNG 保存成图片');
+
+  paper.addEventListener('pointerdown', begin);
+  paper.addEventListener('pointermove', move);
+  paper.addEventListener('pointerup', end);
+  paper.addEventListener('pointercancel', end);
+  paper.addEventListener('pointerleave', () => cursor.style.display='none');
+  paper.addEventListener('touchstart', e => { state.touchCount = e.touches.length; if (e.touches.length >= 2) state.lastTap = Date.now(); }, {passive:false});
+  paper.addEventListener('touchend', e => {
+    const n = state.touchCount;
+    if (Date.now() - state.lastTap < 360) { if (n === 2) restore(state.history, state.future); if (n >= 3) restore(state.future, state.history); }
+    state.touchCount = e.touches.length;
+  }, {passive:false});
+  ['gesturestart','gesturechange','gestureend'].forEach(ev => window.addEventListener(ev, e => e.preventDefault()));
+  window.addEventListener('resize', resizeView);
+
+  function init(reset=false) {
+    state.layers = [makeLayer('背景草稿'), makeLayer('主图层')]; state.active = 1; state.history=[]; state.future=[];
+    if (!reset) {
+      // tiny welcome mark on hidden-ish first layer, proving canvas is live without getting in the way
+      const c = state.layers[0].ctx; c.fillStyle='rgba(0,0,0,.035)'; c.font='80px -apple-system'; c.fillText('Canvas Studio', 86, 140);
+    }
+    resizeView(); drawLayers();
+  }
+  init();
+})();
+</script>
+</body>
+</html>
